@@ -4,17 +4,39 @@
 
 {% block content %}
 <br>
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% endif %}
     <div class="container-fluid">
-        <form method="POST" enctype="multipart/form-data" class="form-control">
+        <div class="jumbotron text-center">
+            <h3>Admission Form</h3>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <form method="POST" enctype="multipart/form-data" class="form-control" id="registrationForm">
             {% csrf_token %}
             <div class="container-fluid">
                 {% bootstrap_form form %}
             </div>
             <div class="container-fluid text-center">
-                <button class="btn btn-primary" style="background-color:rgb(79,90,122)!important; border-color:rgb(79,90,122) !important;">Submit</button>
+                <button id="submitButton" class="btn btn-primary" style="background-color:rgb(79,90,122)!important; border-color:rgb(79,90,122) !important;">Submit</button>
             </div>
         </form>
     </div>
     <br>
+    <script>
+        function reloadPage(){
+            window.location.reload();
+        }
+        document.getElementById('submitButton').onclick = function(){
+            document.getElementById('registrationForm').submit();
+            setTimeout(reloadPage,3000);
+        }
+
+    </script>
     
 {% endblock content %}

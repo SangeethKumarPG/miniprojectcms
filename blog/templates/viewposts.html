@@ -2,10 +2,10 @@
 {% load static %}
 {% block content %}
     <div class="container-fluid">
-        <div class="container-fluid text-center">
-            <h1>All Posts</h1>
+        <div class="container-fluid jumbotron text-center">
+            <h3>All Posts</h3>
         </div>
-        <ul>
+        <ul style="list-style-type: none !important; margin:0 !important; padding:0 !important;">
             {% for post in posts %}
                 <li>
                     <div class="container-fluid" style="border: 1px solid; padding: 10px; box-shadow: 5px 10px 18px rgb(79,90,122); !important">
