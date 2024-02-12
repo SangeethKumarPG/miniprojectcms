@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<br>
+    <div class="container-fluid">
+        <form method="POST" enctype="multipart/form-data" class="form-control">
+            {% csrf_token %}
+            <div class="container-fluid">
+                {% bootstrap_form form %}
+            </div>
+            <div class="container-fluid text-center">
+                <button class="btn btn-primary" style="background-color:rgb(79,90,122)!important; border-color:rgb(79,90,122) !important;">Submit</button>
+            </div>
+        </form>
+    </div>
+    <br>
+    
+{% endblock content %}
