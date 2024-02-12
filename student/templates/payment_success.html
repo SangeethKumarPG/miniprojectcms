@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="margin:auto;
+width:50%;
+padding: 20px;
+box-shadow : 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+<h1 style="color:green">Payment Success</h1>
+</div>
+
+{% comment %} <script>
+    document.addEventListener("DOMContentLoaded", async() =>{
+       let params= new URLSearchParams(location.search);
+       console.log(params.get('payment_id'));
+       request_params = {
+        'payment_id' : params.get('payment_id'),
+        'payment_request_id' : params.get('payment_request_id')
+       };
+       const queryString = new URLSearchParams(request_params).toString();
+       const url = "{% url 'isfeepaid'%}";
+       const response = await fetch(url+'?'+queryString);
+       const data = await response.json();
+       console.log(data);
+    });
+
+</script> {% endcomment %}
+
+{% comment %} <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        let params = new URLSearchParams(location.search);
+        
+        const requestParams = {
+            'payment_id': params.get('payment_id'),
+            'payment_request_id': params.get('payment_request_id')
+        };
+        
+        const queryString = new URLSearchParams(requestParams).toString();
+        const url = "{% url 'isfeepaid' %}";
+        
+        try {
+            const response = await fetch(url + '?' + queryString);
+            const data = await response.json();
+
+            const paymentStatus = data && data.payment && data.payment.status;
+
+            const h1Element = document.querySelector('h1');
+            if (paymentStatus === 'Success' || paymentStatus==="Credit") {
+                h1Element.textContent = 'Payment Success';
+                h1Element.style.color = 'green';
+            }
+            else {
+                const paymentStatusNew = data && data.payment_request && data.payment.status;
+                if (paymentStatusNew === 'Credit'){
+                    h1Element.textContent = 'Payment Success';
+                    h1Element.style.color = 'green';
+                }else{
+                    h1Element.textContent = 'Payment Failure';
+                    h1Element.style.color = 'red';
+                }
+               
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+
+            const h1Element = document.querySelector('h1');
+            h1Element.textContent = 'Payment Failure (Error)';
+            h1Element.style.color = 'red';
+        }
+    });
+</script> {% endcomment %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        let params = new URLSearchParams(location.search);
+        
+        const requestParams = {
+            'payment_id': params.get('payment_id'),
+            'payment_request_id': params.get('payment_request_id')
+        };
+        
+        const queryString = new URLSearchParams(requestParams).toString();
+        const url = "{% url 'isfeepaid' %}";
+        
+        try {
+            const response = await fetch(url + '?' + queryString);
+            const data = await response.json();
+
+            // Check if payment exists in data
+            if (data && (data.payment || data.payment_request)) {
+                let paymentStatus;
+                if (data.payment) {
+                    paymentStatus = data.payment.status;
+                    console.log("Payment Status"+paymentStatus);
+                } else {
+                    paymentStatus = data.payment_request.payment.status;
+                    console.log(paymentStatus);
+                }
+
+                const h1Element = document.querySelector('h1');
+                if (paymentStatus === 'Success' || paymentStatus === 'Credit') {
+                    h1Element.textContent = 'Payment Success';
+                    h1Element.style.color = 'green';
+                } else {
+                    h1Element.textContent = 'Payment Failure';
+                    h1Element.style.color = 'red';
+                }
+            } else {
+                throw new Error('Invalid response data');
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+
+            const h1Element = document.querySelector('h1');
+            h1Element.textContent = 'Payment Failure (Error)';
+            h1Element.style.color = 'red';
+        }
+    });
+</script>
+
+
+{% endblock content %}

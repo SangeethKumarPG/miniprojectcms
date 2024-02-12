@@ -16,6 +16,11 @@ from django.urls import reverse
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib import colors
+from django.http import JsonResponse
+from .models import Course, FeeStructure
+from instamojo_wrapper import Instamojo
+from cms.settings import INSTA_MOJO_API_KEY,INSTA_MOJO_AUTH_TOKEN,INSTA_MOJO_SALT
+from django.utils import timezone
 # Create your views here.
 
 class RegistrationCreateView(CreateView):
@@ -172,3 +177,104 @@ class RegistrationCreateView(CreateView):
 
     def get_success_url(self):
         return None
+    
+
+def fetch_fee_detail(request):
+    if request.method=='GET':
+
+        student = Registration.objects.get(roll_number = request.GET['rollno'])
+        if student != None:
+            if student.selected_course.name.lower() == request.GET['course'].lower():             
+                fees_data = student.selected_course.fee_structure
+                if student.first_semester_fee_paid == None and student.second_semester_fee_paid == None and student.third_semester_fee_paid == None and student.fourth_semester_fee_paid == None:
+                    data ={
+                        '1stsem' : str(fees_data.first_semester) + ','+ 'FirstSemester',
+                        '2stsem' : str(fees_data.second_semester)+ ',' + 'SecondSemester',
+                        '3stsem' : str(fees_data.third_semester)+ ',' + 'ThirdSemester',
+                        '4thsem' : str(fees_data.fourth_semester)+ ',' + 'FourthSemester',
+                    }
+                elif student.second_semester_fee_paid == None:
+                    data ={
+                        '2stsem' : str(fees_data.second_semester)+ ',' + 'SecondSemester',
+                        '3stsem' : str(fees_data.third_semester)+ ',' + 'ThirdSemester',
+                        '4thsem' : str(fees_data.fourth_semester)+ ',' + 'FourthSemester',
+                    }
+                elif student.third_semester_fee_paid == None:
+                    data ={
+                        '3stsem' : str(fees_data.third_semester)+ ',' + 'ThirdSemester',
+                        '4thsem' : str(fees_data.fourth_semester)+ ',' + 'FourthSemester',
+                    } 
+                elif student.fourth_semester_fee_paid == None:
+                    data ={
+                        '4thsem' : str(fees_data.fourth_semester)+ ',' + 'FourthSemester',
+                    }
+                else:
+                    data = {
+                        "NA":"No Fees Pending"
+                    }                              
+                print(data)
+                return JsonResponse(data)
+            else:
+                return JsonResponse({"error" : "invalid course"})
+        else:
+            return JsonResponse({"error" : "invalid Roll number"})
+
+def payment_success(request):
+    return render(request,"payment_success.html")  
+
+def fee_payment(request):
+    if request.method == "POST":
+       rollno = request.POST.get("rollno")
+       email = request.POST.get("email")
+       fees_data = request.POST.get("semester")
+       fees = fees_data.split(',')[0]
+       purpose = fees_data.split(',')[1]
+       purpose+=','+rollno
+       print(fees)
+       api = Instamojo(api_key = INSTA_MOJO_API_KEY, auth_token = INSTA_MOJO_AUTH_TOKEN, endpoint='https://test.instamojo.com/api/1.1/')
+       response = api.payment_request_create(
+           amount=fees,
+           purpose=purpose,
+           send_email = True,
+           email = email,
+           redirect_url = "http://127.0.0.1:8000/student/paymentsuccess/"
+       )
+        
+       print(response.get('payment_request').get('id'))
+       return render(request,"payment_link_generated.html",{
+           'url' :response.get('payment_request').get('longurl'),
+           'id' : response.get('payment_request').get('id') 
+       })
+    else:
+        return render(request,'fee_payment.html')
+    
+
+def save_fee_details(student,response,semester):
+    if response.get('success') == True and response.get('payment_request').get('status') == 'Completed':
+        if semester == "FirstSemester" and student.first_semester_fee_paid == None:
+            student.first_semester_fee_paid = timezone.now()
+            student.save()
+        elif semester == "SecondSemester" and student.second_semester_fee_paid == None:
+            student.second_semester_fee_paid = timezone.now()
+            student.save()
+        elif semester == "ThirdSemester" and student.third_semester_fee_paid == None:
+            student.third_semester_fee_paid = timezone.now()
+            student.save()
+        elif semester == "FourthSemester" and student.fourth_semester_fee_paid == None:
+            student.fourth_semester_fee_paid = timezone.now()
+            student.save()
+
+def is_fee_paid(request):
+    if request.method == "GET":
+        payment_id = request.GET['payment_id']
+        payment_request_id = request.GET['payment_request_id']
+        api = Instamojo(api_key=INSTA_MOJO_API_KEY, auth_token=INSTA_MOJO_AUTH_TOKEN, endpoint='https://test.instamojo.com/api/1.1/')
+        response = api.payment_request_payment_status(payment_request_id,payment_id)
+        roll_no = response.get('payment_request').get('purpose').split(',')[1]
+        print(response)
+        print(response.get('success') == True)
+        semester = response.get('payment_request').get('purpose').split(',')[0]
+        student = Registration.objects.get(roll_number=roll_no)
+        if student != None and student.selected_course != None:
+            save_fee_details(student=student, response=response,semester=semester)
+        return JsonResponse(response)

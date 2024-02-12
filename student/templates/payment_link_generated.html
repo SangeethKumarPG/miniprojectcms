@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container" style="margin:auto;
+        width:50%;
+        padding: 20px;
+        box-shadow : 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);">
+        <h1 style="color:green">Payment Link Generated</h1>
+    </div>
+    <br>
+    <p>url : <a href="{{url}}">{{url}}</a> <br>transaction id : {{id}}</p>
+
+{% endblock content %}

@@ -151,6 +151,11 @@ CKEDITOR_CONFIGS = {
         },
 }
 
+INSTA_MOJO_API_KEY = "test_62faa5905292a9b7edcae459bff"
+INSTA_MOJO_AUTH_TOKEN = "test_71545b25f1dbdeca55d64f60e85"
+INSTA_MOJO_SALT = "273f5a1e0aa440599ec60a737fa71323"
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

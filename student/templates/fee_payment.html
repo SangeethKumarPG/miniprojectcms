@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container" style="width: 50%;
+border-radius : 10px;
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+padding: 20px;
+margin:auto;">
+
+        <form method="POST" action="{% url 'feepayment' %}">
+        
+        {% csrf_token %}
+        <label for="rollno">Enter Roll number:</label> 
+        <input type="text" name="rollno" id="rollno" class="form-control" required>
+        <br>
+        <label for="course">Select Course:</label>    
+        <select id="course" name="course" class="form-control">
+            <option selected>Select course</option>
+            <option value="MCA">MCA</option>
+            <option value="MVOC">MVOC</option>
+        </select>
+        <br>
+
+        <label for="semester">Select Semester:</label> 
+        <select id="semester" name="semester" class="form-control">
+            <option selected>Select semsester</option>
+        </select>
+        <br>
+        <label for="email">Enter Email:</label> 
+        <input type="email" name="email" id="email" class="form-control">
+        <br>
+        <br>
+        <div class="text-center">
+            <input type="submit" value="Pay" class="btn btn-primary form-control" class="p-2"> 
+        </div>
+        </div>
+
+
+<script>
+        const course = document.querySelector("#course");
+        course.addEventListener("change",async() => {
+            const rollno = document.getElementById("rollno").value;
+            console.log(rollno);
+            try{
+                const endpoint = "{% url 'fee_details'%}";
+                
+                if(rollno!=""){
+                    const param = {
+                        "course" : course.value,
+                        "rollno" : rollno
+                    };
+                    const queryString = new URLSearchParams(param).toString();
+                    const response = await fetch(endpoint+'?'+queryString);
+                    const data = await response.json();
+                    console.log(data);
+                    const semseter = document.querySelector("#semester");
+                    semester.innerHTML = '';
+                    for(let key in data){
+                        if(data.hasOwnProperty(key)){
+                            semester.innerHTML += '<option value='+data[key]+'>'+data[key]+'</option>';
+                        }
+                    }
+                }
+            }catch(error){
+                console.log(error);
+            }
+        });
+
+</script>
+
+{% endblock content %}
