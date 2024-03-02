@@ -82,6 +82,7 @@ class Registration(models.Model):
     third_semester_fee_paid = models.DateField(blank=True, null=True)
     fourth_semester_fee_paid = models.DateField(blank=True, null=True)
     admission_status = models.CharField(max_length=20, choices=IS_ADMITTED_CHOICES)
+    edit_link_count = models.IntegerField(default=3)
     def __str__(self):
         return f"{self.admission_number}-{self.first_name}-{self.last_name}"
     

@@ -66,4 +66,18 @@
     <br>
     <br>
     </div>
+
+    <script>
+            document.addEventListener('DOMContentLoaded',function(){
+                const urlParams = new URLSearchParams(window.location.search);
+                const postId = urlParams.get('pk');
+                {% comment %} console.log("Function called : "+postId); {% endcomment %}
+                if(postId){
+                    const modal = document.getElementById(`fullPostModal${postId}`);
+                    {% comment %} console.log(modal); {% endcomment %}
+                    const bsModal = new bootstrap.Modal(modal);
+                    bsModal.show();
+                }
+            });
+    </script>
 {% endblock content %}

@@ -13,6 +13,12 @@ class BlogPost(models.Model):
     )
     body = RichTextUploadingField()
     author = models.CharField(max_length=100, blank=True, null=True)
+    POST_CATEGORY = [
+        ("general","general"),
+        ("administrative","administrative"),
+        ("miscellaneous","miscellaneous")
+    ]
+    category = models.CharField(max_length=100, choices=POST_CATEGORY, null=True, blank=True)
     publish_on = models.DateTimeField(blank=True, null=True)
     def __str__(self):
         return self.title

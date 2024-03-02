@@ -20,5 +20,6 @@ class Faculty(models.Model):
     dob = models.DateField(validators=[validate_age], blank=False, null=False)
     highest_qualification = models.CharField(max_length=100, validators=[RegexValidator(regex='^[a-zA-Z0-9.]*$', message=_("Invalid Qualification. Must not have special characters"))])
     years_of_experience = models.FloatField(blank=False, null=False)
+    email = models.EmailField(null=True, blank=True)
     def __str__(self) -> str:
         return self.first_name+self.last_name

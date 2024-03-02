@@ -1,7 +1,7 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 from .models import Registration
 from .forms import StudentRegistrationForm
 from io import BytesIO
@@ -103,7 +103,21 @@ class RegistrationCreateView(CreateView):
 
     # def get_success_url(self):
     #     return reverse_lazy('registration_form')
-    
+
+class RegistrationUpdateView(UpdateView):
+    model = Registration
+    form_class = StudentRegistrationForm
+    template_name = 'student_registration.html'
+    success_url = reverse_lazy("registration_form")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        pdf_filename = f'registration_{self.object.pk}.pdf'
+        pdf_content = self.generate_pdf()  # Assuming you have a method to generate PDF
+        messages.success(self.request, "Form Updated Successfully!")
+        response = HttpResponse(pdf_content, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
+        return response 
 
 def fetch_fee_detail(request):
     if request.method=='GET':

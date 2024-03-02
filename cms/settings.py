@@ -58,6 +58,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'sangeeth695@gmail.com'
+EMAIL_HOST_PASSWORD = 'omkkonvlcfzdbnvo'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
 ROOT_URLCONF = 'cms.urls'
 
 TEMPLATES = [
@@ -127,7 +135,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 # STATIC_ROOT = os.path.join(BASE_DIR,'static/')
-STATIC_URL = 'static/'
+# Define the base directory of your Django project
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Define the URL prefix for static files.
+STATIC_URL = '/static/'
+
+# Define the directory where static files will be collected during production.
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
+
+# Define the additional directories from which to collect static files during development.
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/'),
 ]
