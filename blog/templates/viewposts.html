@@ -5,6 +5,19 @@
         <div class="container-fluid jumbotron text-center">
             <h3>All Posts</h3>
         </div>
+        {% if user.is_authenticated %}
+            <div class="container-fluid text-center">
+                <form method="GET" action="">
+                    <select name="category">
+                        <option value="">All Posts</option>  
+                        <option value="administrative">Administrative</option>
+                        <option value="general">General</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary" style="background-color:rgb(79,90,122)!important; border-color:rgb(79,90,122) !important;">Filter</button>
+                </form>
+            </div>
+        <br>
+        {% endif %}
         <ul style="list-style-type: none !important; margin:0 !important; padding:0 !important;">
             {% for post in posts %}
                 <li>

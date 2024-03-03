@@ -21,7 +21,7 @@ def generate_roll_number(sender, instance, **kwargs):
     print(f"instance.roll_number == '' : {not instance.roll_number}")
     if instance.pk is None:  
         print("Primary key none")
-        if instance.admission_status == 'admitted':
+        if instance.admission_status == 'admitted' and instance.selected_course:
             latest_instance = Registration.objects.filter(admission_status='admitted').order_by('-roll_number').first()
             if latest_instance:
                 print("latest instance")
@@ -39,7 +39,7 @@ def generate_roll_number(sender, instance, **kwargs):
         else:
             print("Set empty roll number")
             instance.roll_number = ''
-    elif instance.admission_status == 'admitted' and not instance.roll_number:
+    elif instance.admission_status == 'admitted' and not instance.roll_number and instance.selected_course:
         print("admitted with no roll number")
         latest_instance = Registration.objects.filter(admission_status='admitted').order_by('-roll_number').first()
         if latest_instance:
@@ -57,14 +57,14 @@ def generate_roll_number(sender, instance, **kwargs):
             instance.roll_number = 'AAA001'
         print("Add admission time")
         instance.admission_date = timezone.now().date()
-        # if validate_email(instance.student_email):
-        #     send_mail(
-        #         subject=f"Admission Process of {instance.first_name} {instance.last_name} completed",
-        #         message=f"Congratulations!!! Your admission for {instance.selected_course} has been completed. Your roll number is:{instance.roll_number}",
-        #         from_email=settings.EMAIL_HOST_USER,
-        #         recipient_list=[instance.student_email],
-        #         fail_silently=True
-        #     )
+        if validate_email(instance.student_email):
+            send_mail(
+                subject=f"Admission Process of {instance.first_name} {instance.last_name} completed",
+                message=f"Congratulations!!! Your admission for {instance.selected_course} has been completed. Your roll number is:{instance.roll_number}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[instance.student_email],
+                fail_silently=True
+            )
 
 
 
@@ -105,22 +105,20 @@ def send_registraion_email(sender, instance, created, **kwargs):
                 fail_silently=True
             )
     else:
-        if instance.edit_link_count <= 3 and instance.edit_link_count >= 0:
-            current_link_count = instance.edit_link_count
-            current_link_count -= 1
-            instance.edit_link_count = current_link_count
+        if instance.edit_link_count <= 3 and instance.edit_link_count > 0 and instance.admission_status != "admitted" and instance.admission_status != "pending":
+            instance.edit_link_count -= 1
             subject="Admission Registration Completed"
-        message=f'Hello {instance.first_name} {instance.last_name} \n\n your have succesfully completed the first step of registraion.'
-        edit_link = reverse('registraion_update',kwargs={'pk':instance.pk})
-        message+=f"You can edit the submitted details by using this link: {EMAIL_LINK_BASE}{edit_link}"
+            message=f'Hello {instance.first_name} {instance.last_name} \n\n your have succesfully completed the first step of registraion.'
+            edit_link = reverse('registraion_update',kwargs={'pk':instance.pk})
+            message+=f"You can edit the submitted details by using this link: {EMAIL_LINK_BASE}{edit_link}"
 
-        if validate_email(instance.student_email):
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[instance.student_email],
-                fail_silently=True
-            )
-
+            if validate_email(instance.student_email):
+                send_mail(
+                    subject=subject,
+                    message=message,
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[instance.student_email],
+                    fail_silently=True
+                )
+            instance.save()
 

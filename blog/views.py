@@ -31,7 +31,11 @@ class ShowPostListView(ListView):
     context_object_name = "posts"
     paginate_by = 10
     def get_queryset(self) -> QuerySet[Any]:
-        return BlogPost.objects.all().order_by('-publish_on')
+        category=self.request.GET.get('category')
+        if category:
+            return BlogPost.objects.filter(category=category).order_by('-publish_on')
+        else:
+            return BlogPost.objects.all().order_by('-publish_on')
 
 
 

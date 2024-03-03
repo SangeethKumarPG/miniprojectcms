@@ -29,13 +29,13 @@
     </div>
     <br>
     <script>
-        function reloadPage(){
+        {% comment %} function reloadPage(){
             window.location.reload();
         }
         document.getElementById('submitButton').onclick = function(){
             document.getElementById('registrationForm').submit();
             setTimeout(reloadPage,3000);
-        }
+        } {% endcomment %}
 
     </script>
     

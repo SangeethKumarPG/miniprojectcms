@@ -39,7 +39,7 @@ def send_email(recipient_list, subject, message):
         subject=subject,
         message=message,
         from_email=settings.EMAIL_HOST_USER,
-        recipient_list=recipient_list
+        recipient_list=recipient_list, fail_silently=True
     )
 
 

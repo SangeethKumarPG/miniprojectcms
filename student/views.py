@@ -22,7 +22,84 @@ from instamojo_wrapper import Instamojo
 from cms.settings import INSTA_MOJO_API_KEY,INSTA_MOJO_AUTH_TOKEN,INSTA_MOJO_SALT
 from django.utils import timezone
 from django.contrib import messages
+from reportlab.lib.utils import ImageReader
+import uuid
 # Create your views here.
+
+# def generate_pdf(form_data):
+#     print("Generate pdf called")
+#     print(f"Form data : {form_data}")
+#     buffer = BytesIO()
+#     doc = SimpleDocTemplate(buffer, pagesize=letter)
+#     elements = []
+#     styles = {
+#         'Normal': ParagraphStyle(
+#             'Normal',
+#             fontSize=12,
+#             leading=14,
+#         ),
+#         'Heading1': ParagraphStyle(
+#             'Heading1',
+#             fontSize=14,
+#             leading=16,
+#             textColor=colors.blue,
+#         ),
+#     }
+
+#     try:
+#         # photo_path = form_data['photo'].path
+#         photo_content = form_data['photo'].read()
+#         # photo = Image(photo_path, width=1.5*inch, height=1.5*inch)
+
+#         photo = Image(BytesIO(photo_content))
+#         elements.append(photo)
+#         elements.append(Spacer(1, 0.5*inch))
+#         print(photo_content)
+#         # if photo_content and photo_content.startswith(b'\xff\xd8\xff\xe0\x00\x10JFIF'):
+            
+#         #     photo = ImageReader(BytesIO(photo_content))
+#         #     elements.append(Image(photo, width=1.5*inch, height=1.5*inch))
+#         #     elements.append(Spacer(1, 0.5*inch))
+#         # else:
+#         #     raise ValueError("Invalid image content")
+#     except Exception as e:
+#         elements.append(Paragraph(f"Error: {e}", styles['Normal']))
+
+#     data = [
+#         ['Field', 'Value'],
+#         ['First Name', form_data['first_name']],
+#         ['Last Name', form_data['last_name']],
+#         ['Course Option 1', form_data['course_option1'].name],
+#         ['Course Option 2', form_data['course_option2'].name],
+#         ['Date of Birth', str(form_data['date_of_birth'])],
+#         ['Graduation Date', str(form_data['graduation_date'])],
+#         ['Graduation Stream', form_data['graduation_stream'].name],
+#         ['Graduation Percentage', str(form_data['graduation_percentage'])],
+#         ['Guardian Name', form_data['guardian_name']],
+#         ['Guardian Relationship', form_data['relationship_with_guardian']],
+#         ['Guardian Contact Number', form_data['contact_number_of_guardian']],
+#         ['Student Email', form_data['student_email']],
+#     ]
+
+#     table = Table(data, colWidths=[1.5*inch, 3*inch])
+#     table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+#                             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+#                             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#                             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#                             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#                             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+#                             ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+#     elements.append(table)
+
+#     try:
+#         doc.build(elements)
+#         pdf_content = buffer.getvalue()
+#         buffer.close()
+#         return pdf_content
+#     except Exception as e:
+#         return f"Error generating PDF: {e}"
+
+
 
 class RegistrationCreateView(CreateView):
     model = Registration
@@ -112,12 +189,75 @@ class RegistrationUpdateView(UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        pdf_filename = f'registration_{self.object.pk}.pdf'
-        pdf_content = self.generate_pdf()  # Assuming you have a method to generate PDF
-        messages.success(self.request, "Form Updated Successfully!")
+        pdf_filename =  f'registration_{self.object.pk}.pdf'
+        pdf_content = self.generate_pdf()
+        messages.success(self.request, "Form Submitted Successfully!")
         response = HttpResponse(pdf_content, content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="{pdf_filename}"'
-        return response 
+        return response
+    
+    
+    def generate_pdf(self):
+        buffer = BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        elements = []
+        styles = {
+            'Normal': ParagraphStyle(
+                'Normal',
+                fontSize=12,
+                leading=14,
+            ),
+            'Heading1': ParagraphStyle(
+                'Heading1',
+                fontSize=14,
+                leading=16,
+                textColor=colors.blue,
+            ),
+        }
+        try:
+            photo_path = self.object.photo.path
+            photo = Image(photo_path, width=1.5*inch, height=1.5*inch)
+            elements.append(photo)
+            elements.append(Spacer(1, 0.5*inch))
+
+        except Exception as e:
+            elements.append(Paragraph(f"Error: {e}", styles['Normal']))
+
+        data = [
+            ['Field', 'Value'],
+            ['First Name', self.object.first_name],
+            ['Last Name', self.object.last_name],
+            ['Course Option 1', self.object.course_option1.name],
+            ['Course Option 2', self.object.course_option2.name],
+            ['Admission Date', str(self.object.admission_date)],
+            ['Date of Birth', str(self.object.date_of_birth)],
+            ['Graduation Date', str(self.object.graduation_date)],
+            ['Graduation Stream', self.object.graduation_stream.name],
+            ['Graduation Percentage', str(self.object.graduation_percentage)],
+            ['Guardian Name', self.object.guardian_name],
+            ['Guardian Relationship', self.object.relationship_with_guardian],
+            ['Guardian Contact Number', self.object.contact_number_of_guardian],
+            ['Student Email', self.object.student_email],
+        ]
+        table = Table(data, colWidths=[1.5*inch, 3*inch])
+        # table = Table(data, colWidths=[3*inch, 6*inch])
+        table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+        elements.append(table)
+
+        try:
+            doc.build(elements)
+            pdf_content = buffer.getvalue()
+            buffer.close()
+            return pdf_content
+
+        except Exception as e:
+            return f"Error generating PDF: {e}"
 
 def fetch_fee_detail(request):
     if request.method=='GET':
