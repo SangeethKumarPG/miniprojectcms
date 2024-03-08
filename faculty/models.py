@@ -23,3 +23,16 @@ class Faculty(models.Model):
     email = models.EmailField(null=True, blank=True)
     def __str__(self) -> str:
         return self.first_name+self.last_name
+    
+class Subject(models.Model):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=100)
+
+    def __str__(self) -> str:
+        return self.name
+    
+class Semester(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name

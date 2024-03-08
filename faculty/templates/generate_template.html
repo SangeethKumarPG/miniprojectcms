@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid text-center">
+    <div class="container mt-5">
+        <h2 class="mb-4">Generate CSV Template/ View Report</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row g-3 align-items-center mb-3">
+                <div class="col-auto">
+                    <label for="course" class="col-form-label">Course:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="course" id="course" class="form-select" required>
+                        <option value="" selected disabled>Select Course</option>
+                        <!-- Populate options dynamically from your database -->
+                        {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3 align-items-center mb-3">
+                <div class="col-auto">
+                    <label for="semester" class="col-form-label">Semester:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="semester" id="semester" class="form-select" required>
+                        <option value="" selected disabled>Select Semester</option>
+                        <!-- Populate options dynamically from your database -->
+                        {% for semester in semesters %}
+                            <option value="{{ semester.id }}">{{ semester.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3 align-items-center mb-3">
+                <div class="col-auto">
+                    <label for="faculty" class="col-form-label">Faculty:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="faculty" id="faculty" class="form-select" required>
+                        <option value="" selected disabled>Select Faculty</option>
+                        <!-- Populate options dynamically from your database -->
+                        {% for faculty in faculties %}
+                            <option value="{{ faculty.id }}">{{ faculty.first_name }} {{ faculty.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row g-3 align-items-center mb-3">
+                <div class="col-auto">
+                    <label for="subject" class="col-form-label">Subject:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="subject" id="subject" class="form-select" required>
+                        <option value="" selected disabled>Select Subject</option>
+                        <!-- Populate options dynamically from your database -->
+                        {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="background-color:rgb(79,90,122)!important; border-color:rgb(79,90,122) !important;">Generate CSV Template/View Report</button>
+        </form>
+        <br>
+    </div>
+</div>
+
+{% endblock content %}
+
+

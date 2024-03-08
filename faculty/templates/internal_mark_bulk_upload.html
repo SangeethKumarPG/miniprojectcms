@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">❌</button>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="container-fluid">
+    <div class="container mt-5">
+        <div class="text-center">
+        <h1 class="mb-4">Internal Mark Bulk Upload</h1>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="course" class="form-label">Course:</label>
+                <select name="course_id" id="course" class="form-select" required>
+                    <option value="" selected disabled>Select Course</option>
+                    {% for course in courses %}
+                    <option value="{{ course.id }}">{{ course.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="semester" class="form-label">Semester:</label>
+                <select name="semester_id" id="semester" class="form-select" required>
+                    <option value="" selected disabled>Select Semester</option>
+                    {% for semester in semesters %}
+                    <option value="{{ semester.id }}">{{ semester.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="faculty" class="form-label">Faculty:</label>
+                <select name="faculty_id" id="faculty" class="form-select" required>
+                    <option value="" selected disabled>Select Faculty</option>
+                    {% for faculty in faculties %}
+                    <option value="{{ faculty.id }}">{{ faculty.first_name }} {{ faculty.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="subject" class="form-label">Subject:</label>
+                <select name="subject_id" id="subject" class="form-select" required>
+                    <option value="" selected disabled>Select Subject</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="csv_file" class="form-label">Upload CSV File:</label>
+                <input type="file" name="csv_file" id="csv_file" class="form-control" required>
+            </div>
+            <div class="text-center">
+            <button type="submit" class="btn btn-primary" style="background-color:rgb(79,90,122)!important; border-color:rgb(79,90,122) !important;">Upload</button>
+            </div>
+        </form>
+        <br>
+    </div>
+</div>
+{% endblock content %}
+
+

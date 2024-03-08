@@ -88,15 +88,30 @@ class Registration(models.Model):
     
 
 
-
-
-
 class FeeStructure(models.Model):
     first_semester=models.FloatField(blank=True, null=True)
     second_semester=models.FloatField(blank=True, null=True)
     third_semester=models.FloatField(blank=True, null=True)
     fourth_semester=models.FloatField(blank=True, null=True)
    
+
+class StudentSemester(models.Model):
+    registration = models.ForeignKey('student.Registration', on_delete=models.CASCADE)
+    semester = models.ForeignKey('faculty.Semester', on_delete=models.CASCADE)
+    subject = models.ForeignKey('faculty.Subject', on_delete=models.CASCADE)
+    faculty = models.ForeignKey('faculty.Faculty', on_delete=models.CASCADE)
+    course = models.ForeignKey('student.Course', on_delete=models.CASCADE)
+    internal_exam1_mark = models.FloatField(blank=True, null=True)
+    internal_exam2_marks = models.FloatField(blank=True, null=True)
+    assignment_mark = models.FloatField(blank=True, null=True)
+    seminar_mark = models.FloatField(blank=True, null=True)
+    total_mark = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('registration', 'semester', 'subject')
+
+    def __str__(self):
+        return f"{self.registration.first_name} {self.registration.last_name} - {self.semester.name}"
 
 
 

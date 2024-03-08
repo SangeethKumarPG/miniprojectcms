@@ -167,6 +167,17 @@
 								<a class="dropdown-item" href="{% url "showposts" %}">View Posts </a>
 							</div>
 						</li>
+						{% if user.is_authenticated %}
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="dropdown-a" data-toggle="dropdown">Internal Marks </a>
+							<div class="dropdown-menu" aria-labelledby="dropdown-a">
+								
+								<a class="dropdown-item" href="{% url "get_template" %}">View Report/Get Template</a>
+								
+								<a class="dropdown-item" href="{% url "bulk_upload" %}">Bulk Upload </a>
+							</div>
+						</li>
+						{%endif%}
 						<li class="nav-item"><a class="nav-link" href="{% url "facultylist" %}">Teachers</a></li>
 						<li class="nav-item"><a class="nav-link" href="{% url "feepayment" %}">Pay Fees</a></li>
 						<li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
