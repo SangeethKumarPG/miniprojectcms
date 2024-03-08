@@ -1,0 +1,9 @@
+pip install django-extensions and place django_extensions in installed apps.
+brew install graphviz
+python3 manage.py graph_models -a --dot -o models_test1.dot  
+dot -Tpng models_test1..dot -o test_model1.png       
+
+for grouped diagrams
+python3 manage.py graph_models -a -g --dot -o grouped_model.dot
+
+dot -Tpng grouped_model.dot -o grouped_model1.png              

@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'student',
     'faculty',
     'django_bootstrap5',
+    'django_extensions',
+    'models2puml',
 ]
 
 MIDDLEWARE = [
