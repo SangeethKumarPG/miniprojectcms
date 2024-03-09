@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">❌</button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container-fluid">
+    <div class="container text-center">
+        <h1 class="mt-5 mb-4">Student Marks Details</h1>
+        <form method="GET" action="{% url 'detailed_internalmarks' %}" class="mb-4">
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" name="roll_number" class="form-control" placeholder="Enter Roll Number" required>
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary">Get Details</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    {% if student_marks %}
+    <div class="container">
+        <br>
+        <div class="container text-center">
+            <h4>Name: {{ student_marks.0.registration.first_name }} {{ student_marks.0.registration.last_name }}</h4>
+            <h4>Selected Course: {{ student_marks.0.registration.selected_course}}</h4>
+            <h4>Roll Number:{{ student_marks.0.registration.roll_number}}
+        </div>
+        <br>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Semester</th>
+                    <th>Internal Exam 1 Mark</th>
+                    <th>Internal Exam 2 Mark</th>
+                    <th>Assignment Mark</th>
+                    <th>Seminar Mark</th>
+                    <th>Total Mark</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student_mark in student_marks %}
+                <tr>
+                    <td>{{ student_mark.subject }}</td>
+                    <td>{{ student_mark.semester }}</td>
+                    <td>{{ student_mark.internal_exam1_mark }}</td>
+                    <td>{{ student_mark.internal_exam2_marks }}</td>
+                    <td>{{ student_mark.assignment_mark }}</td>
+                    <td>{{ student_mark.seminar_mark }}</td>
+                    <td>{{ student_mark.total_mark }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock content %}
+
+
+

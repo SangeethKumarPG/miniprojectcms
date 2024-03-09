@@ -3,7 +3,7 @@ from .models import Faculty, Semester, Subject
 from django.views.generic import TemplateView
 from django.http import HttpResponse, HttpResponseBadRequest
 import pandas as pd
-from student.models import StudentSemester, Course
+from student.models import StudentSemester, Course, Registration
 from django.contrib import messages
 import io
 
@@ -143,3 +143,17 @@ def populate_student_semester(request):
     })
 
     # return HttpResponseBadRequest('Method not allowed')
+
+def student_marks_detailed(request): 
+    roll_number = request.GET.get('roll_number')
+    if not roll_number:
+        messages.error(request, "Roll number cannot be empty")
+        return render(request, 'student_internal_marks_details.html')
+    else:
+        try:
+            registration = Registration.objects.get(roll_number=roll_number)
+        except Registration.DoesNotExist:
+            messages.error(request, "Roll number does not exist")
+            return render(request, 'student_internal_marks_details.html')
+        student_marks = StudentSemester.objects.filter(registration=registration)
+        return render(request, 'student_internal_marks_details.html', {'student_marks': student_marks})
