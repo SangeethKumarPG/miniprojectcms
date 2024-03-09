@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% load auth_extras %}
 {% block content %}
-
+{% if request.user|has_group:"blogadmin" or user.is_superuser%}
 
     <div class="container-fluid">
 
@@ -25,4 +26,12 @@
     <script>
         CKEDITOR.replace('id_body');  // Replace 'id_body' with the actual ID of your CKEditor field
     </script>
+    {%else%}
+            <div class="container-fluid">
+                <div class="jumbotron text-center">
+                    <h3>You are not authorized to create post</h3>
+                </div>
+            </div>
+    {% endif %}
 {% endblock content %}
+

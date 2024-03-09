@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% load auth_extras %}
 {% block content %}
+{% if request.user|has_group:"facultyadmin" or user.is_superuser%}
 {% if messages %}
     {% for message in messages %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -64,7 +66,13 @@
     </div>
     {% endif %}
 </div>
-
+{% else %}
+<div class="container-fluid">
+    <div class="jumbotron text-center">
+        <h3>You are not authorized for this!</h3>
+    </div>
+</div>
+{%endif%}
 {% endblock content %}
 
 
